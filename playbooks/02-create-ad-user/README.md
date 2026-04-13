@@ -1,3 +1,3 @@
 # 02 - Example create AD user
 
-Create AD user, see comments for posix attrbiutes.
+Create a AD user, see comments for posix attributes.
