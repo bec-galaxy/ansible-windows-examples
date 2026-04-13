@@ -1,0 +1,10 @@
+---
+- name: Ensure AD objects are replicated
+  block:
+    - name: Starts cross-site AD replication
+      ansible.windows.win_powershell:
+        script: "{{ lookup('file', 'start_ad_replication.ps1') }}"
+  rescue:
+    - name: Wait for scheduled AD replication
+      ansible.builtin.pause:
+        minutes: 15

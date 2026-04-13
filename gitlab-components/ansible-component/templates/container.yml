@@ -1,0 +1,47 @@
+spec:
+  inputs:
+    file:
+      type: string
+      description: "The definition of the ansible-builder execution environment yaml."
+      default: execution-environment.yml
+    extra-build-cli-args:
+      type: string
+      description: "This option allows the user to pass any additional command line arguments to the container engine build command (docker build or podman build)."
+      default: >-
+        --pull
+        --no-cache
+    verbosity:
+      type: number
+      description: "Increase the output verbosity, for up to three levels of verbosity."
+      default: 3
+---
+default:
+  tags:
+    - shell
+
+stages: [build, publish]
+
+variables:
+  REGISTRY_AUTH_FILE: "/tmp/registry-auth-${CI_JOB_ID:?}.json"
+
+ansible-builder:
+  stage: build
+  script:
+    - ansible-builder --version
+    - ansible-builder build --tag="${CI_PROJECT_NAME:?}:${CI_COMMIT_SHA:?}" --file="$[[ inputs.file ]]" --extra-build-cli-args="$[[ inputs.extra-build-cli-args ]]" --verbosity="$[[ inputs.verbosity ]]"
+  interruptible: true
+
+podman-push:
+  stage: publish
+  environment: $CI_COMMIT_REF_NAME
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED == "true" && $CI_PIPELINE_SOURCE == "push"
+  script:
+    - podman login --username "${CI_REGISTRY_USERNAME:?}" --password "${CI_REGISTRY_PASSWORD:?}" "${CI_REGISTRY_URL:?}"
+    - >-
+      podman tag
+      "${CI_PROJECT_NAME:?}:${CI_COMMIT_SHA:?}"
+      "${CI_REGISTRY_URL:?}/${CI_PROJECT_NAME:?}:latest"
+    - >-
+      podman push
+      "${CI_REGISTRY_URL:?}/${CI_PROJECT_NAME:?}:latest"

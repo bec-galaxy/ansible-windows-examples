@@ -1,0 +1,27 @@
+---
+#
+# Autodetect shell if you have no cmdb
+#
+- name: Temporary things
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Determine executing shell
+      ansible.builtin.raw: "echo"
+      register: shell
+      changed_when: false
+
+    - name: Switch platform shell
+      ansible.builtin.set_fact:
+        ansible_shell_type: cmd
+      when: shell is search("conhost") # Windows Console Host
+
+- name: Connection to server
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Print debug
+      ansible.builtin.debug:
+        msg: "Hello World from {{ ansible_hostname }} ({{ ansible_os_family }})"
+
+# ansible-playbook playbook.yml -i inventory/inventory.yml

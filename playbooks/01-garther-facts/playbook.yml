@@ -1,0 +1,11 @@
+---
+- name: Garther facts
+  hosts: all
+  gather_subset:
+    - "min"
+  tasks:
+    - name: Print debug
+      ansible.builtin.debug:
+        msg: "Hello World from {{ ansible_distribution }}."
+
+# ansible-playbook playbook.yml -i inventory/inventory.yml

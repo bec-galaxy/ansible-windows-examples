@@ -1,0 +1,44 @@
+spec:
+  inputs:
+    profile:
+      type: string
+      description: "Specify which lint rules profile should be used."
+      default: production
+      options:
+        - min
+        - basic
+        - moderate
+        - safety
+        - shared
+        - production
+---
+stages: [verify, publish]
+
+ansible-lint:
+  stage: verify
+  script:
+    - ansible-lint --version
+    - ansible-lint --profile $[[ inputs.profile ]] --project-dir . --format json --force-color | tee report.json | jq
+  artifacts:
+    reports:
+      codequality: report.json
+
+ansible-test:
+  stage: verify
+  rules:
+    - exists:
+        - tests/integration/targets/**/*
+  script:
+    - ansible-test --version
+    - ansible-test integration --local --verbose
+  interruptible: true
+
+ansible-galaxy:
+  stage: publish
+  environment: $CI_COMMIT_REF_NAME
+  rules:
+    - if: $CI_COMMIT_REF_PROTECTED == "true" && $CI_PIPELINE_SOURCE == "push"
+  script:
+    - ansible-galaxy --version
+    - ansible-galaxy collection build . --output-path dist --force
+    - ansible-galaxy collection publish dist/*-*.tar.gz --server "${CI_AUTOMATION_HUB_SERVER:?}" --token "${CI_AUTOMATION_HUB_TOKEN:?}"

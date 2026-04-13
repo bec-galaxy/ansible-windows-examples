@@ -1,0 +1,36 @@
+- name: Create AD user
+  hosts: windows_server
+  tasks:
+    - name: Create AD objects
+      vars:
+        username: "my-user-account"
+      block:
+        - name: Ensure user is present
+          microsoft.ad.user:
+            identify: "{{ username }}"
+            sam_account_name: "{{ username }}"
+            name: "Firstname, Lastname, {{ username }}"
+            firstname: "Firstname"
+            surname: "Lastname"
+            email: "mail@my.domain"
+            description: "Example account"
+            password: "{{ lookup('community.general.random_string', length=24) }}"
+            update_password: "on_create"
+            path: "OU=my,DC=my,DC=domain"
+            upn: "{{ username ~ '@' ~ ansible_domain }}"
+            state: present
+            enabled: true
+            attributes:
+              state:
+                department: "my-department"
+                altSecurityIdentities: "ssh-ed25519 AAAAC3N.."
+                # uid: "{{ user_name }}"
+                # uidNumber: 123
+                # gidNumber: 123
+                # loginshell: "/bin/bash"
+                # unixHomeDirectory: "/home/{{ username | lower ~ '@' ~ ansible_domain }}"
+
+    # - name: Ensure AD object is replacted
+    #   mynamespace.windows.adsync # See roles/adsync
+
+# ansible-playbook playbook.yml -i inventory/inventory.yml

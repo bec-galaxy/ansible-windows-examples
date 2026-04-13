@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  author: Patrick B. <mail@my.domain>
+  description: This role can be used to start a cross-site AD replication.
+  license: MIT
+  company: Example
+
+  min_ansible_version: "2.13"
+
+  platforms:
+    - name: Windows
+
+dependencies: []

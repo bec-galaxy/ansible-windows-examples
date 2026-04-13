@@ -1,0 +1,47 @@
+---
+version: 3
+
+images:
+  base_image:
+    name: automation-hub.my.domain/ee-supported-rhel9:latest
+
+additional_build_files:
+  - src: files
+    dest: files
+
+additional_build_steps:
+  prepend_base:
+    - COPY --chmod=755 _build/files/etc /etc/
+    - RUN update-ca-trust extract
+  append_base:
+    - RUN $PYCMD -m pip install -U pip # https://ansible.readthedocs.io/projects/builder/en/latest/porting_guides/porting_guide_v3.1/#error-double-requirement-given
+  # prepend_galaxy:
+  # append_galaxy:
+  # prepend_builder:
+  # append_builder:
+  # prepend_final:
+  # append_final:
+
+dependencies:
+  # galaxy:
+  system:
+    - krb5-libs
+    - krb5-workstation
+    # Used in pipeline
+    - jq
+  python:
+    # Modules for microsoft.ad.ldap
+    - dnspython
+    - pyspnego
+    - pyspnego[kerberos]
+    - sansldap
+    - dpapi-ng
+    # Modules for infoblox.nios_modules
+    - infoblox-client
+    # Modules for community.general.gitlab_*
+    - python-gitlab
+    # Modules for community.hashi_vault
+    - hvac
+
+options:
+  package_manager_path: /usr/bin/microdnf

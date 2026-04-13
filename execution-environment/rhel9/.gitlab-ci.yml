@@ -1,0 +1,7 @@
+#
+# ---
+# include:
+#   - component: mygitlab-server.domain/shared/components/ansible-component/containers@~latest
+#
+# See gitlab-compomnents/ansible-component/templates/container.yml for more informations.
+#

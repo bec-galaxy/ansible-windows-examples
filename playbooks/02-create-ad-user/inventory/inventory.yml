@@ -1,0 +1,8 @@
+windows_server:
+  hosts:
+    vm-windows-example-01:
+      ansible_host: vm-windows-example-01.my.domain
+
+  vars:
+    ansible_user: example
+    ansible_shell_type: cmd # Shell type
