@@ -1,0 +1,7 @@
+---
+all:
+ vars:
+   # ansible_user: root
+   # ansible_password: password
+ hosts:
+    vm-00-d000001.zone.my.domain: # Windows host

@@ -1,0 +1,45 @@
+---
+- name: Format disks
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ensure variables are set
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - inputs is defined
+          - inputs.disks is defined
+
+    - name: Ensure one partition per disk is specified
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - inputs.disks | map(attribute='unitNumber') | unique | count == inputs.disks | count
+        fail_msg: "Multiple partitions per disk are not implemented."
+
+    - name: Ensure disks are initialized
+      community.windows.win_initialize_disk:
+        disk_number: "{{ item.unitNumber }}"
+        style: gpt
+      loop: "{{ inputs.disks }}"
+
+    - name: Ensure partitions are created
+      community.windows.win_partition:
+        drive_letter: "{{ item.letter }}"
+        partition_size: -1 # -1 is maximum supported size.
+        disk_number: "{{ item.unitNumber }}"
+      loop: "{{ inputs.disks }}"
+
+    - name: Ensure volumes are created
+      when: not ansible_check_mode
+      community.windows.win_format:
+        drive_letter: "{{ item.letter }}"
+        new_label: "{{ item.name }}"
+        file_system: NTFS
+        allocation_unit_size: "{{ item.blockSize * 1024 }}" # bsp. 4 Kibibytes (KiB) to 4096 Bytes
+      loop: "{{ inputs.disks }}"
+
+    - name: Print debug
+      when: not ansible_check_mode
+      ansible.builtin.debug:
+        msg: "Disks are successfully formatted."
