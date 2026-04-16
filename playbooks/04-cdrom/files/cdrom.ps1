@@ -16,6 +16,7 @@ if($Ansible.Verbosity -ge 3) {
     # https://docs.ansible.com/ansible/latest/collections/ansible/windows/win_powershell_module.html#notes
     $VerbosePreference = "Continue"
 }
+$Ansible.Changed = $false
 
 $cdrom = Get-CimInstance -ClassName Win32_Volume -Filter 'DriveType=5'
 $count = ($cdrom | Measure-Object).Count
