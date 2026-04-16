@@ -30,7 +30,7 @@ If you have problems with the installation, use the [latest MSI (Preview)](https
 
 ## Configuration
 
-The system-wide configuration file is located under `%programdata%\ssh\ssh_config`, restart the service after changes.
+The system-wide configuration file is located under `%programdata%\ssh\sshd_config`, restart the service after changes.
 
 ```ps1
 Restart-Service "sshd"
