@@ -15,4 +15,3 @@
         script: "{{ lookup('file', 'cdrom.ps1') }}"
         parameters:
           letter: "{{ cdrom_letter }}"
-
