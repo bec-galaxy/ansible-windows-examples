@@ -1,0 +1,25 @@
+{
+    "keyboard.layout": "00000407",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.copyOnSelection": true,
+    "yaml.customTags": [
+        "!vault",
+        "!reference sequence"
+    ],
+    "editor.formatOnSave": true,
+    "editor.fontLigatures": false,
+    "explorer.confirmDragAndDrop": false,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "window.menuBarVisibility": "visible",
+    "ansible.lightspeed.suggestions.enabled": false,
+    "ansible.lightspeed.enabled": false,
+    "workbench.editor.empty.hint": "hidden",
+    "redhat.telemetry.enabled": false,
+    "git.autofetch": "all",
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "chat.disableAIFeatures": true
+}
