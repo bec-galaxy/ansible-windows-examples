@@ -11,6 +11,12 @@
     "updateRemoteUserUID": true,
     "customizations": {
     "vscode": {
+        // https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml
+        // https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow
+        // https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments
+        // https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one
+        // https://marketplace.visualstudio.com/items?itemName=shardulm94.trailing-spaces
+        // https://marketplace.visualstudio.com/items?itemName=midudev.better-svg
         "extensions": ["redhat.ansible"]
         }
     },
