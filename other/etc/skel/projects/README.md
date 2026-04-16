@@ -10,7 +10,7 @@ git config --global user.email ""
 
 ## SSH key
 
-To use ssh git clone or push, create a new ssh key or use your existing key and store it under your profile: https://git.admin.p.rz.drv/-/user_settings/ssh_keys
+To use ssh git clone or push, create a new ssh key or use your existing key and store it under your profile: https://git.my.domain/-/user_settings/ssh_keys
 
 ## Configure Ansible (Virtual python environment)
 
