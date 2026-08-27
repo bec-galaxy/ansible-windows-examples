@@ -1,0 +1,49 @@
+spec:
+  inputs:
+    file:
+      type: string
+      description: "The definition of the ansible-builder execution environment yaml."
+      default: execution-environment.yml
+    extra-build-cli-args:
+      type: string
+      description: "This option allows the user to pass any additional command line arguments to the container engine build command (docker build or podman build)."
+      default: >-
+        --pull
+        --no-cache
+    squash:
+      type: string
+      options:
+        - "new"
+        - "all"
+        - "off"
+      description: "Squash layers in the final image."
+      default: "new"
+    authfile:
+      type: string
+      description: "This option allows the user to pass a credentials file for multiple registries to the container engine."
+      default: ""
+    verbosity:
+      type: number
+      description: "Increase the output verbosity, for up to three levels of verbosity."
+      default: 3
+---
+stages: [builder]
+
+ansible-builder:
+  stage: builder
+  variables:
+    REGISTRY_AUTH_FILE: "$[[ inputs.authfile ]]"
+  script:
+    - |
+      echo 'Templating file...'
+      envsubst < '$[[ inputs.file ]]' > 'execution-environment-temp.yml'
+    - |
+      echo 'Building container...'
+      ansible-builder --version
+      ansible-builder build --file 'execution-environment-temp.yml' --extra-build-cli-args '$[[ inputs.extra-build-cli-args ]]' --sqush '$[[ inputs.squash ]]' --verbosity '$[[ inputs.verbosity ]]'
+    - |
+      echo 'Publishing container...'
+      for tag in $(yq -r '.options.tags[]' 'execution-environment-temp.yml'); do
+          podman push $tag
+      done
+  interruptible: true

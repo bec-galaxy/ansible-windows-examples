@@ -1,0 +1,5 @@
+[example]
+name=example
+baseurl=https://example/artifactory/example-rpm
+enabled=0
+gpgcheck=0

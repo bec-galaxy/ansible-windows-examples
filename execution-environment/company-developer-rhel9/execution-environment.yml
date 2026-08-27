@@ -1,0 +1,96 @@
+---
+version: 3
+
+#
+# Company Developer Execution Environment
+#
+
+images:
+  base_image:
+    name: localhost/company-supported-rhel9:1.0.0
+
+additional_build_files:
+  - src: files
+    dest: files
+
+additional_build_steps:
+  prepend_base:
+    - COPY --chmod=644 _build/files/etc/containers/storage.conf /etc/containers/
+  append_base: |
+    RUN useradd runner --no-create-home \
+                       --home-dir /runner \
+                       --shell /bin/bash \
+                       --uid 1000 \
+                       --gid 0
+
+    RUN echo -e "runner:1001:64535\n" > /etc/subuid && \
+        echo -e "runner:1001:64535\n" > /etc/subgid
+
+    RUN mkdir -p /var/lib/shared/overlay-images \
+                 /var/lib/shared/overlay-layers \
+                 /var/lib/shared/vfs-images \
+                 /var/lib/shared/vfs-layers && \
+        touch /var/lib/shared/overlay-images/images.lock && \
+        touch /var/lib/shared/overlay-layers/layers.lock && \
+        touch /var/lib/shared/vfs-images/images.lock && \
+        touch /var/lib/shared/vfs-layers/layers.lock
+
+    ENV BUILDAH_ISOLATION=chroot
+  # prepend_galaxy:
+  # append_galaxy:
+  # prepend_builder:
+  # append_builder:
+  # prepend_final:
+  append_final: |
+    LABEL org.opencontainers.image.title="company-developer-rhel9" \
+          org.opencontainers.image.description="Company Developer Execution Environment" \
+          org.opencontainers.image.authors="Example <team-example@example.de>" \
+          org.opencontainers.image.vendor="Company"
+
+    COPY --from=my-other-container /opt /opt
+
+    RUN ansible --version && \
+        ansible-builder --version && \
+        ansible-creator --version && \
+        ansible-lint --version && \
+        ansible-navigator --version && \
+        ansible-runner --version && \
+        ansible-sign --version && \
+        molecule --version && \
+        molecule drivers && \
+        podman --version && \
+        git --version && \
+        uname -a
+
+dependencies:
+  # galaxy:
+  system:
+    # Developer rpm tools
+    - python3.12-devel
+    - rpm-build
+    - rpmlint
+    - rpmdevtools
+    - make
+    - nano
+    - jq
+    - iputils
+    # Container builder tools
+    - podman
+    - passt
+    - buildah
+  python:
+    # Developer python tools
+    - ansible-dev-tools
+    - ansible-builder
+    - ansible-lint
+    - yq
+    - jq
+    - jinja2
+  python_interpreter:
+    python_path: /usr/bin/python3.12
+
+options:
+  package_manager_path: /usr/bin/microdnf
+  tags:
+    - localhost/company-developer-rhel9:latest
+    - localhost/company-developer-rhel9:1.0.0

@@ -1,0 +1,62 @@
+---
+version: 3
+
+#
+# Company Default Execution Environment
+#
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-27/ee-supported-rhel9:1.0.0-1785405904
+
+additional_build_files:
+  - src: files
+    dest: files
+
+additional_build_steps:
+  prepend_base:
+    - COPY --chmod=644 _build/files/etc/pip.conf /etc/
+    - COPY --chmod=644 _build/files/etc/dnf/dnf.conf /etc/dnf/
+    - COPY --chmod=644 _build/files/etc/ansible/ansible.$(CI_COMMIT_REF_NAME).cfg /etc/ansible/
+    - COPY --chmod=644 _build/files/etc/yum.repos.d/*.repo /etc/yum.repos.d/
+    - COPY --chmod=644 _build/files/etc/pki/ca-trust/source/anchors/*.pem /etc/pki/ca-trust/source/anchors/
+    - RUN update-ca-trust extract
+    - RUN find /etc/pki/rpm-gpg -delete
+  # append_base:
+  # prepend_galaxy:
+  # append_galaxy:
+  # prepend_builder:
+  # append_builder:
+  # prepend_final:
+  append_final:
+    - LABEL org.opencontainers.image.title="company-supported-rhel9"
+    - LABEL org.opencontainers.image.description="Company Default Execution Environment"
+    - LABEL org.opencontainers.image.authors="Example <team-example@example.de>"
+    - LABEL org.opencontainers.image.vendor="Company"
+
+dependencies:
+  # galaxy:
+  system:
+    - python3.12-devel [compile platform:rpm]
+  python:
+    # Modules for microsoft.ad.ldap
+    - dnspython
+    - pyspnego[kerberos]
+    - sansldap
+    - dpapi-ng
+    # Modules for infoblox.nios_modules
+    # - infoblox-client
+    # Modules for community.general.gitlab
+    - python-gitlab
+    # Modules for community.hashi_vault
+    - hvac
+    # Modules for rzdrv.ad.sid2uid
+    - mmh3
+  python_interpreter:
+    python_path: /usr/bin/python3.12
+
+options:
+  package_manager_path: /usr/bin/microdnf
+  tags:
+    - localhost/company-supported-rhel9:latest
+    - localhost/company-supported-rhel9:1.0.0
