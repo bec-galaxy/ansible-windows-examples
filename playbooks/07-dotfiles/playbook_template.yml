@@ -1,0 +1,44 @@
+---
+- name: Template example
+  hosts: all,!poweredoff
+  become: true
+  tasks:
+    - name: Ensure variables are set
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - message is defined
+        fail_msg: "Variable 'message' is not defined."
+
+    - name: Ensure server type is supported
+      ansible.builtin.assert:
+        quiet: false
+        that:
+          - server_tag is defined
+          - server_tag in ['dbservers', 'webservers']
+        fail_msg: "Server type is unsupported."
+        success_msg: "Server '{{ server_tag }}' is supported."
+
+    - name: Create folder
+      ansible.builtin.file:
+        path: /etc/example/
+        state: directory
+        mode: "0755"
+
+    - name: Template file
+      ansible.builtin.template:
+        src: "example.conf.j2"
+        dest: "/etc/example/example.conf"
+        mode: "0644"
+        owner: "root"
+        group: "root"
+
+    # - name: Create folder
+    #   ansible.windows.win_file:
+    #     path: "C:\\Program Files\\Example"
+    #     state: directory
+
+    # - name: Template file
+    #   ansible.windows.win_template:
+    #     src: "example.conf.j2"
+    #     dest: "C:\\Program Files\\Example\\example.conf"

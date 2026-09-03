@@ -1,0 +1,42 @@
+---
+- name: Preperation
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Ensure variables are set
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - parameter_hostname is defined
+          - parameter_server_tag is defined
+
+    - name: Add host to local inventory
+      ansible.builtin.add_host:
+        hostname: "{{ parameter_hostname }}"
+        groups: targets
+        server_tag: "{{ parameter_server_tag }}"
+
+- name: Provisioning
+  hosts: targets
+  roles:
+    - company.myrole_a
+    - company.myrole_b
+    - company.myrole_c
+  tasks:
+    - name: Add host to global inventory
+      vars:
+        controller_hosts:
+          - name: "{{ parameter_hostname }}"
+            inventory: "my-inventory"
+            enabled: true
+            variables:
+              ansible_host: "{{ parameter_hostname }}"
+            state: present
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.controller_hosts
+
+    - name: Print debug
+      when: not ansible_check_mode
+      ansible.builtin.debug:
+        msg: "Host '{{ parameter_hostname }}' is successfully configured."

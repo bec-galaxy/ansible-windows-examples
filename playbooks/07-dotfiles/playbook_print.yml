@@ -1,0 +1,7 @@
+---
+- name: Print example
+  hosts: all
+  tasks:
+    - name: Print message
+      ansible.builtin.debug:
+        msg: "Hello World from {{ ansible_facts['fqdn'] }}"

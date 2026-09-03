@@ -1,0 +1,28 @@
+---
+- name: Vault example
+  hosts: all
+  become: true
+  tasks:
+    - name: Create folder
+      ansible.builtin.file:
+        path: /etc/example/
+        state: directory
+        mode: "0755"
+
+    - name: Copy encrypted string
+      ansible.builtin.copy:
+        dest: /etc/example/textfile.txt
+        content: |
+          Hello World from Ansible
+        mode: "0644"
+
+    # - name: Create folder
+    #   ansible.windows.win_file:
+    #     path: "C:\\Program Files\\Example"
+    #     state: directory
+
+    # - name: Copy encrypted string
+    #   ansible.windows.win_copy:
+    #     dest: 'C:\\Program Files\\Example\\textfile.txt"
+    #     content: |
+    #       Hello World from Ansible
